@@ -578,8 +578,6 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
 				// set the gif true flag
 				isGIF = true;
 			}
-		} catch(IOException e){
-			LOG.d(LOG_TAG,"Exception while reading input stream.");
 		} finally {
 			if (buffStream != null) {
 				try {
@@ -634,9 +632,15 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
 					return;
 				}
 
-				if(processAsGIF(uriString)){
-					return;
-				}
+				try{
+					if(processAsGIF(uriString)){
+						return;
+					}
+				}catch(IOException e){
+					// not a gif, or an error so just do nothing
+					Log.d(LOG_TAG, "GIF processing error");
+				}				
+				
 
 				Bitmap bitmap = null;
 				try {
