@@ -532,17 +532,22 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
 
 	private byte[] getBytesFromInputStream(InputStream is) throws IOException
 	{
-	    try (ByteArrayOutputStream os = new ByteArrayOutputStream();)
-	    {
-	        byte[] buffer = new byte[0xFFFF];
+		ByteArrayOutputStream os;
+		try{
+			os = new ByteArrayOutputStream();
+			byte[] buffer = new byte[0xFFFF];
 
-	        for (int len; (len = is.read(buffer)) != -1;)
-	            os.write(buffer, 0, len);
+			for (int len; (len = is.read(buffer)) != -1;){
+			    os.write(buffer, 0, len);
+			}
 
-	        os.flush();
-
-	        return os.toByteArray();
-	    }
+			os.flush();
+			return os.toByteArray();
+		}finally{
+			if(os != null){
+				os.close();
+			}
+		}
 	}
 
 	private Boolean processAsGIF(String uriString)throws IOException {
