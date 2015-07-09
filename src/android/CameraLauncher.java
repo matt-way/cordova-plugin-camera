@@ -533,9 +533,8 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
 
 	private byte[] getBytesFromInputStream(InputStream is) throws IOException
 	{
-		ByteArrayOutputStream os;
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try{
-			os = new ByteArrayOutputStream();
 			byte[] buffer = new byte[0xFFFF];
 
 			for (int len; (len = is.read(buffer)) != -1;){
