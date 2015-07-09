@@ -220,12 +220,10 @@ public class FileHelper {
     public static String getMimeType(String uriString, CordovaInterface cordova) {
         String mimeType = null;
 
-        Log.d("RUFFLE", uriString);
         Uri uri = Uri.parse(uriString);
         if (uriString.startsWith("content://")) {
             mimeType = cordova.getActivity().getContentResolver().getType(uri);
         } else {
-            Log.d("RUFFLE-", uri.getPath());
             mimeType = getMimeTypeForExtension(uri.getPath());
         }
 
