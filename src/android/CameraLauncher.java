@@ -563,6 +563,7 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
                 String uriString = uri.toString();
                 // Get the path to the image. Makes loading so much easier.
                 String mimeType = FileHelper.getMimeType(uriString, this.cordova);
+                Log.d(LOG_TAG, mimeType);
                 // If we don't have a valid image so quit.
                 if (!("image/jpeg".equalsIgnoreCase(mimeType) || "image/png".equalsIgnoreCase(mimeType))) {
                     Log.d(LOG_TAG, "I either have a null image path or bitmap");
