@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import android.util.Log;
 
 public class FileHelper {
     private static final String LOG_TAG = "FileUtils";
