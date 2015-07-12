@@ -626,7 +626,9 @@ private String ouputModifiedBitmap(Bitmap bitmap, Uri uri) throws IOException {
 				String mimeType = FileHelper.getMimeType(uriString, this.cordova);
 				Log.d(LOG_TAG, mimeType);
 				// If we don't have a valid image so quit.
-				if (!("image/jpeg".equalsIgnoreCase(mimeType) || "image/png".equalsIgnoreCase(mimeType))) {
+				if (!("image/jpeg".equalsIgnoreCase(mimeType) || 
+					  "image/png".equalsIgnoreCase(mimeType) ||
+					  "image/gif".equalsIgnoreCase(mimeType))) {
 					Log.d(LOG_TAG, "I either have a null image path or bitmap");
 					this.failPicture("Unable to retrieve path to picture!");
 					return;
