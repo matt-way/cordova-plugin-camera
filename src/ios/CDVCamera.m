@@ -484,7 +484,7 @@ static NSString* toBase64(NSData* data) {
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:moviePath];
 }
 
-- (void)resultForGif:(NSString*)url success:(void(^)(CDVPluginResult* result)handler)
+- (void)resultForGif:(NSString*)url success:(void(^)(CDVPluginResult* gifResult))handler
 {
     //NSLog(@"Doing gif check!!!!!!");
 
