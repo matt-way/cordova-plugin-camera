@@ -484,10 +484,39 @@ static NSString* toBase64(NSData* data) {
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:moviePath];
 }
 
-- (CDVPluginResult*)resultForGif:(NSString*)url
+- (void)resultForGif:(NSString*)url success:(void(^)(CDVPluginResult* result)handler)
 {
-    NSLog(@"Doing gif check!!!!!!");
-    return nil;
+    //NSLog(@"Doing gif check!!!!!!");
+
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        [library assetForURL:url
+            resultBlock:^(ALAsset *asset)
+            {
+                ALAssetRepresentation *representation = [asset defaultRepresentation];
+
+                NSLog(@"size of asset in bytes: %d", [representation size]);
+
+                unsigned char bytes[4];
+                [representation getBytes:bytes fromOffset:0 length:4 error:nil];
+                NSLog(@"first four bytes: %02x (%c) %02x (%c) %02x (%c) %02x (%c)",
+                                   bytes[0], bytes[0], 
+                                   bytes[1], bytes[1], 
+                                   bytes[2], bytes[2], 
+                                   bytes[3], bytes[3]);
+
+                [library autorelease];
+
+                handler(nil);
+            }
+            failureBlock:^(NSError *error)
+            {
+                NSLog(@"couldn't get asset: %@", error);
+
+                [library autorelease];
+
+                handler(nil);
+            }
+        ];
 }
 
 - (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info
@@ -500,22 +529,27 @@ static NSString* toBase64(NSData* data) {
 
         // check if selected file is a gif first
         NSString* picUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
-        result = [self resultForGif:picUrl];
-        if(result == nil){
-            NSString* mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-            if ([mediaType isEqualToString:(NSString*)kUTTypeImage]) {
-                result = [self resultForImage:cameraPicker.pictureOptions info:info];
+        [self resultForGif:picUrl success:^(CDVPluginResult* gifResult){
+            result = gifResult;
+
+            NSLog(@"Got to success area!!!!!!!!!!");
+
+            if(result == nil){
+                NSString* mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+                if ([mediaType isEqualToString:(NSString*)kUTTypeImage]) {
+                    result = [self resultForImage:cameraPicker.pictureOptions info:info];
+                }
+                else {
+                    result = [self resultForVideo:info];
+                }
             }
-            else {
-                result = [self resultForVideo:info];
-            }
-            
+                
             if (result) {
-                [weakSelf.commandDelegate sendPluginResult:result callbackId:cameraPicker.callbackId];
+               [weakSelf.commandDelegate sendPluginResult:result callbackId:cameraPicker.callbackId];
                 weakSelf.hasPendingOperation = NO;
                 weakSelf.pickerController = nil;
             }
-        }        
+        }];        
     };
     
     if (cameraPicker.pictureOptions.popoverSupported && (cameraPicker.pickerPopoverController != nil)) {
