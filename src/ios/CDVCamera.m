@@ -484,6 +484,12 @@ static NSString* toBase64(NSData* data) {
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:moviePath];
 }
 
+- (CDVPluginResult*)resultForGif:(NSString*)url
+{
+    NSLog(@"Doing gif check!!!!!!");
+    return nil;
+}
+
 - (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info
 {
     __weak CDVCameraPicker* cameraPicker = (CDVCameraPicker*)picker;
@@ -491,20 +497,25 @@ static NSString* toBase64(NSData* data) {
     
     dispatch_block_t invoke = ^(void) {
         __block CDVPluginResult* result = nil;
-        
-        NSString* mediaType = [info objectForKey:UIImagePickerControllerMediaType];
-        if ([mediaType isEqualToString:(NSString*)kUTTypeImage]) {
-            result = [self resultForImage:cameraPicker.pictureOptions info:info];
-        }
-        else {
-            result = [self resultForVideo:info];
-        }
-        
-        if (result) {
-            [weakSelf.commandDelegate sendPluginResult:result callbackId:cameraPicker.callbackId];
-            weakSelf.hasPendingOperation = NO;
-            weakSelf.pickerController = nil;
-        }
+
+        // check if selected file is a gif first
+        NSString* picUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
+        result = [self resultForGif:picUrl];
+        if(result == nil){
+            NSString* mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+            if ([mediaType isEqualToString:(NSString*)kUTTypeImage]) {
+                result = [self resultForImage:cameraPicker.pictureOptions info:info];
+            }
+            else {
+                result = [self resultForVideo:info];
+            }
+            
+            if (result) {
+                [weakSelf.commandDelegate sendPluginResult:result callbackId:cameraPicker.callbackId];
+                weakSelf.hasPendingOperation = NO;
+                weakSelf.pickerController = nil;
+            }
+        }        
     };
     
     if (cameraPicker.pictureOptions.popoverSupported && (cameraPicker.pickerPopoverController != nil)) {
