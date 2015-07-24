@@ -484,7 +484,7 @@ static NSString* toBase64(NSData* data) {
     return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:moviePath];
 }
 
-- (void)resultForGif:(NSString*)url success:(void(^)(CDVPluginResult* gifResult))handler
+- (void)resultForGif:(NSURL*)url success:(void(^)(CDVPluginResult* gifResult))handler
 {
     //NSLog(@"Doing gif check!!!!!!");
 
@@ -504,15 +504,11 @@ static NSString* toBase64(NSData* data) {
                                    bytes[2], bytes[2], 
                                    bytes[3], bytes[3]);
 
-                [library autorelease];
-
                 handler(nil);
             }
             failureBlock:^(NSError *error)
             {
                 NSLog(@"couldn't get asset: %@", error);
-
-                [library autorelease];
 
                 handler(nil);
             }
@@ -528,8 +524,7 @@ static NSString* toBase64(NSData* data) {
         __block CDVPluginResult* result = nil;
 
         // check if selected file is a gif first
-        NSString* picUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
-        [self resultForGif:picUrl success:^(CDVPluginResult* gifResult){
+        [self resultForGif:[info objectForKey:UIImagePickerControllerReferenceURL] success:^(CDVPluginResult* gifResult){
             result = gifResult;
 
             NSLog(@"Got to success area!!!!!!!!!!");
