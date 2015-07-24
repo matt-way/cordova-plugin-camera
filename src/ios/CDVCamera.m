@@ -511,7 +511,7 @@ static NSString* toBase64(NSData* data) {
                     NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:representation.size error:nil];
                     NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
 
-                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:toBase64(data)];
+                    handler([CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:toBase64(data)]);
                 }else{
                     handler(nil);    
                 }                
