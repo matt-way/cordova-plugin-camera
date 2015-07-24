@@ -494,22 +494,31 @@ static NSString* toBase64(NSData* data) {
             {
                 ALAssetRepresentation *representation = [asset defaultRepresentation];
 
-                NSLog(@"size of asset in bytes: %d", [representation size]);
+                //NSLog(@"size of asset in bytes: %lld", [representation size]);
 
+                // get the first 4 bytes to make sure it is a gif
                 unsigned char bytes[4];
                 [representation getBytes:bytes fromOffset:0 length:4 error:nil];
-                NSLog(@"first four bytes: %02x (%c) %02x (%c) %02x (%c) %02x (%c)",
+                /*NSLog(@"first four bytes: %02x (%c) %02x (%c) %02x (%c) %02x (%c)",
                                    bytes[0], bytes[0], 
                                    bytes[1], bytes[1], 
                                    bytes[2], bytes[2], 
                                    bytes[3], bytes[3]);
+                */
+                if(bytes[0] == 71 && bytes[1] == 73 && bytes[2] == 70 && bytes[3] == 56){
+                    // convert the gif into an nsdata
+                    Byte* buffer = (Byte*)malloc(representation.size);
+                    NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:representation.size error:nil];
+                    NSData* data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
 
-                handler(nil);
+                    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:toBase64(data)];
+                }else{
+                    handler(nil);    
+                }                
             }
             failureBlock:^(NSError *error)
             {
                 NSLog(@"couldn't get asset: %@", error);
-
                 handler(nil);
             }
         ];
